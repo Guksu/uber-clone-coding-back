@@ -16,20 +16,23 @@ exports.RestaurnatResolver = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const create_restaurnat_1 = require("./dtos/create-restaurnat");
 const restaurnat_entity_1 = require("./entities/restaurnat.entity");
+const restaurnats_service_1 = require("./restaurnats.service");
 let RestaurnatResolver = class RestaurnatResolver {
-    restaurnat(veganOnly) {
-        return [];
+    constructor(restaurnatService) {
+        this.restaurnatService = restaurnatService;
+    }
+    restaurnat() {
+        return this.restaurnatService.getAll();
     }
     createRestaurnat(CreateRestaurnatDto) {
         return true;
     }
 };
 __decorate([
-    (0, graphql_1.Query)((returns) => restaurnat_entity_1.Restaurnat),
-    __param(0, (0, graphql_1.Args)('veganOnly')),
+    (0, graphql_1.Query)((returns) => [restaurnat_entity_1.Restaurnat]),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Boolean]),
-    __metadata("design:returntype", Array)
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
 ], RestaurnatResolver.prototype, "restaurnat", null);
 __decorate([
     (0, graphql_1.Mutation)((returns) => Boolean),
@@ -39,7 +42,8 @@ __decorate([
     __metadata("design:returntype", Boolean)
 ], RestaurnatResolver.prototype, "createRestaurnat", null);
 RestaurnatResolver = __decorate([
-    (0, graphql_1.Resolver)((type) => restaurnat_entity_1.Restaurnat)
+    (0, graphql_1.Resolver)((type) => restaurnat_entity_1.Restaurnat),
+    __metadata("design:paramtypes", [restaurnats_service_1.RestaurnatService])
 ], RestaurnatResolver);
 exports.RestaurnatResolver = RestaurnatResolver;
 //# sourceMappingURL=restaurnats.resolver.js.map
