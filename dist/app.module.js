@@ -8,13 +8,36 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
+const Joi = require("joi");
 const graphql_1 = require("@nestjs/graphql");
 const restaurnats_module_1 = require("./restaurnats/restaurnats.module");
+const typeorm_1 = require("@nestjs/typeorm");
+const config_1 = require("@nestjs/config");
+const restaurnat_entity_1 = require("./restaurnats/entities/restaurnat.entity");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                envFilePath: process.env.NODE_ENV === 'dev' ? '.env.dev' : '.env.test',
+                ignoreEnvFile: process.env.NODE_ENV === 'prod',
+                validationSchema: Joi.object({
+                    NODE_ENV: Joi.string().valid('dev', 'prod'),
+                    PASSWORD: Joi.string().required(),
+                }),
+            }),
+            typeorm_1.TypeOrmModule.forRoot({
+                type: 'mysql',
+                host: 'localhost',
+                port: 3306,
+                username: 'root',
+                password: process.env.PASSWORD,
+                database: 'uber-clone',
+                entities: [restaurnat_entity_1.Restaurnat],
+                synchronize: true,
+            }),
             graphql_1.GraphQLModule.forRoot({
                 autoSchemaFile: true,
             }),

@@ -11,26 +11,42 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Restaurnat = void 0;
 const graphql_1 = require("@nestjs/graphql");
+const typeorm_1 = require("typeorm");
 let Restaurnat = class Restaurnat {
 };
 __decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    (0, graphql_1.Field)((type) => Number),
+    __metadata("design:type", Number)
+], Restaurnat.prototype, "id", void 0);
+__decorate([
     (0, graphql_1.Field)((type) => String),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Restaurnat.prototype, "name", void 0);
 __decorate([
     (0, graphql_1.Field)((type) => Boolean),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", Boolean)
 ], Restaurnat.prototype, "isVegan", void 0);
 __decorate([
     (0, graphql_1.Field)((type) => String),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Restaurnat.prototype, "address", void 0);
 __decorate([
     (0, graphql_1.Field)((type) => String),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Restaurnat.prototype, "ownerName", void 0);
+__decorate([
+    (0, graphql_1.Field)((type) => String),
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Restaurnat.prototype, "categoryName", void 0);
 Restaurnat = __decorate([
-    (0, graphql_1.ObjectType)()
+    (0, graphql_1.ObjectType)(),
+    (0, typeorm_1.Entity)()
 ], Restaurnat);
 exports.Restaurnat = Restaurnat;
 //# sourceMappingURL=restaurnat.entity.js.map
