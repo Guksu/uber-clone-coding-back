@@ -8,22 +8,38 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RestaurnatResolver = void 0;
 const graphql_1 = require("@nestjs/graphql");
+const create_restaurnat_1 = require("./dtos/create-restaurnat");
+const restaurnat_entity_1 = require("./entities/restaurnat.entity");
 let RestaurnatResolver = class RestaurnatResolver {
-    isPizzaGood() {
+    restaurnat(veganOnly) {
+        return [];
+    }
+    createRestaurnat(CreateRestaurnatDto) {
         return true;
     }
 };
 __decorate([
-    (0, graphql_1.Query)((returns) => Boolean),
+    (0, graphql_1.Query)((returns) => restaurnat_entity_1.Restaurnat),
+    __param(0, (0, graphql_1.Args)('veganOnly')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Boolean]),
+    __metadata("design:returntype", Array)
+], RestaurnatResolver.prototype, "restaurnat", null);
+__decorate([
+    (0, graphql_1.Mutation)((returns) => Boolean),
+    __param(0, (0, graphql_1.Args)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [create_restaurnat_1.CreateRestaurnatDto]),
     __metadata("design:returntype", Boolean)
-], RestaurnatResolver.prototype, "isPizzaGood", null);
+], RestaurnatResolver.prototype, "createRestaurnat", null);
 RestaurnatResolver = __decorate([
-    (0, graphql_1.Resolver)()
+    (0, graphql_1.Resolver)((type) => restaurnat_entity_1.Restaurnat)
 ], RestaurnatResolver);
 exports.RestaurnatResolver = RestaurnatResolver;
 //# sourceMappingURL=restaurnats.resolver.js.map

@@ -1,3 +1,6 @@
+import { CreateRestaurnatDto } from './dtos/create-restaurnat';
+import { Restaurnat } from './entities/restaurnat.entity';
 export declare class RestaurnatResolver {
-    isPizzaGood(): Boolean;
+    restaurnat(veganOnly: boolean): Restaurnat[];
+    createRestaurnat(CreateRestaurnatDto: CreateRestaurnatDto): boolean;
 }
