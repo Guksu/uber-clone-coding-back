@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Restaurnat = void 0;
 const graphql_1 = require("@nestjs/graphql");
+const class_validator_1 = require("class-validator");
 const typeorm_1 = require("typeorm");
 let Restaurnat = class Restaurnat {
 };
@@ -22,26 +23,32 @@ __decorate([
 __decorate([
     (0, graphql_1.Field)((type) => String),
     (0, typeorm_1.Column)(),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], Restaurnat.prototype, "name", void 0);
 __decorate([
-    (0, graphql_1.Field)((type) => Boolean),
-    (0, typeorm_1.Column)(),
+    (0, graphql_1.Field)((type) => Boolean, { defaultValue: true }),
+    (0, typeorm_1.Column)({ default: true }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)
 ], Restaurnat.prototype, "isVegan", void 0);
 __decorate([
     (0, graphql_1.Field)((type) => String),
     (0, typeorm_1.Column)(),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], Restaurnat.prototype, "address", void 0);
 __decorate([
     (0, graphql_1.Field)((type) => String),
     (0, typeorm_1.Column)(),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], Restaurnat.prototype, "ownerName", void 0);
 __decorate([
     (0, graphql_1.Field)((type) => String),
     (0, typeorm_1.Column)(),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], Restaurnat.prototype, "categoryName", void 0);
 Restaurnat = __decorate([

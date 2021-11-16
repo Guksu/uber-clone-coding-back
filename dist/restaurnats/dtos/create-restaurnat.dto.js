@@ -15,4 +15,4 @@ CreateRestaurnatDto = __decorate([
     (0, graphql_1.InputType)()
 ], CreateRestaurnatDto);
 exports.CreateRestaurnatDto = CreateRestaurnatDto;
-//# sourceMappingURL=create-restaurnat.js.map
+//# sourceMappingURL=create-restaurnat.dto.js.map
