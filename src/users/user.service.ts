@@ -4,11 +4,13 @@ import { Repository } from 'typeorm';
 import { CreateAccountInput } from './dtos/create-account.dto';
 import { LoginInput } from './dtos/login.dto';
 import { User } from './entities/user.entity';
+import { JwtService } from 'src/jwt/jwt.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly user: Repository<User>,
+    private readonly jwtService: JwtService,
   ) {}
 
   //arg으로 createAccountInput 는 {email,password,role}과 같다
@@ -27,6 +29,7 @@ export class UserService {
       await this.user.save(this.user.create({ email, password, role }));
       return { ok: true };
     } catch (error) {
+      console.log(error);
       return { ok: false, error: "Can't create account" };
     }
   }
@@ -46,12 +49,19 @@ export class UserService {
         return { ok: false, error: 'Password is wrong' };
       }
 
-      return { ok: true, token: 'Login !' };
+      // token은 사용자도 그 내용을 확인할 수 있기 때문에 중요한 정보를 포함하는것은 안 된다.
+      // token은 이 앱에서만의 유효한 인증을 할 수 있게 해준다.
+      const token = this.jwtService.sign(user.id);
+      return { ok: true, token };
     } catch (error) {
       return {
         ok: false,
         error: 'Fail to login',
       };
     }
+  }
+
+  async findById(id: number): Promise<User> {
+    return this.user.findOne({ id });
   }
 }

@@ -22,9 +22,6 @@ let UserResolver = class UserResolver {
     constructor(userService) {
         this.userService = userService;
     }
-    hi() {
-        return true;
-    }
     async createAccount(createAccountInput) {
         try {
             return this.userService.createAccount(createAccountInput);
@@ -44,13 +41,15 @@ let UserResolver = class UserResolver {
             return { ok: false, error };
         }
     }
+    me(context) {
+        if (!context.user) {
+            return;
+        }
+        else {
+            return context.user;
+        }
+    }
 };
-__decorate([
-    (0, graphql_1.Query)((returns) => Boolean),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], UserResolver.prototype, "hi", null);
 __decorate([
     (0, graphql_1.Mutation)((returns) => create_account_dto_1.CreateAccountOutput),
     __param(0, (0, graphql_1.Args)('input')),
@@ -65,6 +64,13 @@ __decorate([
     __metadata("design:paramtypes", [login_dto_1.LoginInput]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "login", null);
+__decorate([
+    (0, graphql_1.Query)((returns) => user_entity_1.User),
+    __param(0, (0, graphql_1.Context)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], UserResolver.prototype, "me", null);
 UserResolver = __decorate([
     (0, graphql_1.Resolver)((type) => user_entity_1.User),
     __metadata("design:paramtypes", [user_service_1.UserService])
