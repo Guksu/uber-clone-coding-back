@@ -5,7 +5,9 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { RestaurnatsModule } from './restaurnats/restaurnats.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { Restaurnat } from './restaurnats/entities/restaurnat.entity';
+import { UsersModule } from './users/users.module';
+import { CommonModule } from './common/common.module';
+import { User } from './users/entities/user.entity';
 
 @Module({
   imports: [
@@ -25,14 +27,15 @@ import { Restaurnat } from './restaurnats/entities/restaurnat.entity';
       username: 'root',
       password: process.env.PASSWORD,
       database: 'uber-clone',
-      entities: [Restaurnat],
+      entities: [User],
       //배포시 false로 설정할 것
       synchronize: true,
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
     }),
-    RestaurnatsModule,
+    UsersModule,
+    CommonModule,
   ],
   controllers: [],
   providers: [],

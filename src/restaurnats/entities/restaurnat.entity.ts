@@ -2,7 +2,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { IsBoolean, IsOptional, IsString } from 'class-validator';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 //typeorm을 통해 테이블을 코드로 작성 할 수 있다.
-
+//DTO에서 유효성 검사를 할 수 있지만 entity에서도 유효성 감사를 할 수 있다.
 @ObjectType()
 @Entity()
 export class Restaurnat {

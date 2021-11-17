@@ -10,10 +10,11 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const Joi = require("joi");
 const graphql_1 = require("@nestjs/graphql");
-const restaurnats_module_1 = require("./restaurnats/restaurnats.module");
 const typeorm_1 = require("@nestjs/typeorm");
 const config_1 = require("@nestjs/config");
-const restaurnat_entity_1 = require("./restaurnats/entities/restaurnat.entity");
+const users_module_1 = require("./users/users.module");
+const common_module_1 = require("./common/common.module");
+const user_entity_1 = require("./users/entities/user.entity");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -35,13 +36,14 @@ AppModule = __decorate([
                 username: 'root',
                 password: process.env.PASSWORD,
                 database: 'uber-clone',
-                entities: [restaurnat_entity_1.Restaurnat],
+                entities: [user_entity_1.User],
                 synchronize: true,
             }),
             graphql_1.GraphQLModule.forRoot({
                 autoSchemaFile: true,
             }),
-            restaurnats_module_1.RestaurnatsModule,
+            users_module_1.UsersModule,
+            common_module_1.CommonModule,
         ],
         controllers: [],
         providers: [],
