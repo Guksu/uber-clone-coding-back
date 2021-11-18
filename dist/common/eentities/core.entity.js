@@ -16,21 +16,21 @@ let CoreEntity = class CoreEntity {
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
-    (0, graphql_1.Field)((tyep) => Number),
+    (0, graphql_1.Field)((type) => Number),
     __metadata("design:type", Number)
 ], CoreEntity.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
-    (0, graphql_1.Field)((tyep) => Date),
+    (0, graphql_1.Field)((type) => Date),
     __metadata("design:type", Date)
-], CoreEntity.prototype, "createAt", void 0);
+], CoreEntity.prototype, "createdAt", void 0);
 __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
-    (0, graphql_1.Field)((tyep) => Date),
+    (0, graphql_1.Field)((type) => Date),
     __metadata("design:type", Date)
-], CoreEntity.prototype, "updateAt", void 0);
+], CoreEntity.prototype, "updatedAt", void 0);
 CoreEntity = __decorate([
-    (0, typeorm_1.Entity)()
+    (0, graphql_1.ObjectType)()
 ], CoreEntity);
 exports.CoreEntity = CoreEntity;
 //# sourceMappingURL=core.entity.js.map

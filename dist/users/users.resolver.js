@@ -18,7 +18,9 @@ const graphql_1 = require("@nestjs/graphql");
 const auth_user_decorator_1 = require("../auth/auth-user.decorator");
 const auth_guard_1 = require("../auth/auth.guard");
 const create_account_dto_1 = require("./dtos/create-account.dto");
+const edit_profile_dto_1 = require("./dtos/edit-profile.dto");
 const login_dto_1 = require("./dtos/login.dto");
+const user_profile_dto_1 = require("./dtos/user-profile.dto");
 const user_entity_1 = require("./entities/user.entity");
 const user_service_1 = require("./user.service");
 let UserResolver = class UserResolver {
@@ -27,7 +29,11 @@ let UserResolver = class UserResolver {
     }
     async createAccount(createAccountInput) {
         try {
-            return this.userService.createAccount(createAccountInput);
+            const { ok, error } = await this.userService.createAccount(createAccountInput);
+            return {
+                ok,
+                error,
+            };
         }
         catch (error) {
             return {
@@ -38,7 +44,8 @@ let UserResolver = class UserResolver {
     }
     async login(loginInput) {
         try {
-            return this.userService.login(loginInput);
+            const { ok, error, token } = await this.userService.login(loginInput);
+            return { ok, error, token };
         }
         catch (error) {
             return { ok: false, error };
@@ -46,6 +53,33 @@ let UserResolver = class UserResolver {
     }
     me(authUser) {
         return authUser;
+    }
+    async userProfile(userProfileInput) {
+        try {
+            const user = await this.userService.findById(userProfileInput.userId);
+            if (!user) {
+                throw Error();
+            }
+            return {
+                ok: true,
+                user,
+            };
+        }
+        catch (error) {
+            return {
+                error: "User can't found",
+                ok: false,
+            };
+        }
+    }
+    async editProfile(authUser, editProfileInput) {
+        try {
+            await this.userService.editProfile(authUser.id, editProfileInput);
+            return { ok: true };
+        }
+        catch (error) {
+            return { ok: false, error };
+        }
     }
 };
 __decorate([
@@ -70,6 +104,24 @@ __decorate([
     __metadata("design:paramtypes", [user_entity_1.User]),
     __metadata("design:returntype", void 0)
 ], UserResolver.prototype, "me", null);
+__decorate([
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    (0, graphql_1.Query)((returns) => user_profile_dto_1.UserProfileOutput),
+    __param(0, (0, graphql_1.Args)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_profile_dto_1.UserProfileInput]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "userProfile", null);
+__decorate([
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    (0, graphql_1.Mutation)((returns) => edit_profile_dto_1.EditProfileOutput),
+    __param(0, (0, auth_user_decorator_1.AuthUser)()),
+    __param(1, (0, graphql_1.Args)('input')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_entity_1.User,
+        edit_profile_dto_1.EditProfileInput]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "editProfile", null);
 UserResolver = __decorate([
     (0, graphql_1.Resolver)((type) => user_entity_1.User),
     __metadata("design:paramtypes", [user_service_1.UserService])

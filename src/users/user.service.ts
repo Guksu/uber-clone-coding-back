@@ -5,6 +5,7 @@ import { CreateAccountInput } from './dtos/create-account.dto';
 import { LoginInput } from './dtos/login.dto';
 import { User } from './entities/user.entity';
 import { JwtService } from 'src/jwt/jwt.service';
+import { EditProfileInput } from './dtos/edit-profile.dto';
 
 @Injectable()
 export class UserService {
@@ -29,7 +30,6 @@ export class UserService {
       await this.user.save(this.user.create({ email, password, role }));
       return { ok: true };
     } catch (error) {
-      console.log(error);
       return { ok: false, error: "Can't create account" };
     }
   }
@@ -63,5 +63,21 @@ export class UserService {
 
   async findById(id: number): Promise<User> {
     return this.user.findOne({ id });
+  }
+
+  async editProfile(
+    userId: number,
+    { email, password }: EditProfileInput,
+  ): Promise<User> {
+    const user = await this.user.findOne(userId);
+    if (email) {
+      user.email = email;
+    }
+    if (password) {
+      user.password = password;
+    }
+
+    //update의 경우 entity를 경유하지 않고 db로 바로 이동하기 때문에 비밀번호 저장시 hash를 할 수 없다.
+    return this.user.save(user);
   }
 }

@@ -1,5 +1,5 @@
 export declare class CoreEntity {
     id: number;
-    createAt: Date;
-    updateAt: Date;
+    createdAt: Date;
+    updatedAt: Date;
 }

@@ -33,7 +33,6 @@ let UserService = class UserService {
             return { ok: true };
         }
         catch (error) {
-            console.log(error);
             return { ok: false, error: "Can't create account" };
         }
     }
@@ -59,6 +58,16 @@ let UserService = class UserService {
     }
     async findById(id) {
         return this.user.findOne({ id });
+    }
+    async editProfile(userId, { email, password }) {
+        const user = await this.user.findOne(userId);
+        if (email) {
+            user.email = email;
+        }
+        if (password) {
+            user.password = password;
+        }
+        return this.user.save(user);
     }
 };
 UserService = __decorate([
