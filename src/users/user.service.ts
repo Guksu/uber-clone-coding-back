@@ -1,16 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateAccountInput } from './dtos/create-account.dto';
-import { LoginInput } from './dtos/login.dto';
+import {
+  CreateAccountInput,
+  CreateAccountOutput,
+} from './dtos/create-account.dto';
+import { LoginInput, LoginOutput } from './dtos/login.dto';
 import { User } from './entities/user.entity';
 import { JwtService } from 'src/jwt/jwt.service';
-import { EditProfileInput } from './dtos/edit-profile.dto';
+import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
+import { Verification } from './entities/verification.entity';
+import { UserProfileOutput } from './dtos/user-profile.dto';
+import { VerifyEmailOutput } from './dtos/verify-email-dto';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly user: Repository<User>,
+    @InjectRepository(Verification)
+    private readonly verification: Repository<Verification>,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -19,7 +27,7 @@ export class UserService {
     email,
     password,
     role,
-  }: CreateAccountInput): Promise<{ ok: boolean; error?: string }> {
+  }: CreateAccountInput): Promise<CreateAccountOutput> {
     // find는 리스트를 반환하고 findOne은 객체를 반환한다. 따라서 findOne(createAccount.email)은
     // findOne({email})과 같다.
     try {
@@ -27,19 +35,29 @@ export class UserService {
       if (exists) {
         return { ok: false, error: 'Email is alreadt exists' };
       }
-      await this.user.save(this.user.create({ email, password, role }));
+      const user = await this.user.save(
+        this.user.create({ email, password, role }),
+      );
+      await this.verification.save(
+        this.verification.create({
+          user,
+        }),
+      );
       return { ok: true };
     } catch (error) {
       return { ok: false, error: "Can't create account" };
     }
   }
 
-  async login({
-    email,
-    password,
-  }: LoginInput): Promise<{ ok: boolean; error?: string; token?: string }> {
+  async login({ email, password }: LoginInput): Promise<LoginOutput> {
     try {
-      const user = await this.user.findOne({ email });
+      // 아래 의 user코드는
+      // SELECT * FROM id, password FROM user WHERE email =" "
+      // 와 같은 의미
+      const user = await this.user.findOne(
+        { email },
+        { select: ['id', 'password'] },
+      );
       if (!user) {
         return { ok: false, error: 'User not found' };
       }
@@ -61,23 +79,64 @@ export class UserService {
     }
   }
 
-  async findById(id: number): Promise<User> {
-    return this.user.findOne({ id });
+  async findById(id: number): Promise<UserProfileOutput> {
+    try {
+      const user = await this.user.findOne({ id });
+      if (user) {
+        return {
+          ok: true,
+          user: user,
+        };
+      }
+    } catch (error) {
+      return { ok: false, error: 'User Not Found' };
+    }
   }
 
   async editProfile(
     userId: number,
     { email, password }: EditProfileInput,
-  ): Promise<User> {
-    const user = await this.user.findOne(userId);
-    if (email) {
-      user.email = email;
-    }
-    if (password) {
-      user.password = password;
-    }
+  ): Promise<EditProfileOutput> {
+    try {
+      const user = await this.user.findOne(userId);
+      if (email) {
+        user.email = email;
+        user.verified = false;
+        await this.verification.save(this.verification.create({ user }));
+      }
 
-    //update의 경우 entity를 경유하지 않고 db로 바로 이동하기 때문에 비밀번호 저장시 hash를 할 수 없다.
-    return this.user.save(user);
+      if (password) {
+        user.password = password;
+      }
+      //update의 경우 entity를 경유하지 않고 db로 바로 이동하기 때문에 비밀번호 저장시 hash를 할 수 없다.
+      await this.user.save(user);
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      return { ok: false, error: "Can't Update profile" };
+    }
+  }
+
+  async verfiyEmail(code: string): Promise<VerifyEmailOutput> {
+    try {
+      const verification = await this.verification.findOne(
+        { code },
+        { relations: ['user'] },
+      );
+
+      if (verification) {
+        verification.user.verified = true;
+        this.user.save(verification.user);
+        return { ok: true };
+      }
+
+      return { ok: false, error: 'Verification not found' };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
   }
 }

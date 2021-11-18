@@ -21,6 +21,7 @@ const create_account_dto_1 = require("./dtos/create-account.dto");
 const edit_profile_dto_1 = require("./dtos/edit-profile.dto");
 const login_dto_1 = require("./dtos/login.dto");
 const user_profile_dto_1 = require("./dtos/user-profile.dto");
+const verify_email_dto_1 = require("./dtos/verify-email-dto");
 const user_entity_1 = require("./entities/user.entity");
 const user_service_1 = require("./user.service");
 let UserResolver = class UserResolver {
@@ -28,58 +29,22 @@ let UserResolver = class UserResolver {
         this.userService = userService;
     }
     async createAccount(createAccountInput) {
-        try {
-            const { ok, error } = await this.userService.createAccount(createAccountInput);
-            return {
-                ok,
-                error,
-            };
-        }
-        catch (error) {
-            return {
-                error: error,
-                ok: false,
-            };
-        }
+        return this.createAccount(createAccountInput);
     }
     async login(loginInput) {
-        try {
-            const { ok, error, token } = await this.userService.login(loginInput);
-            return { ok, error, token };
-        }
-        catch (error) {
-            return { ok: false, error };
-        }
+        return this.userService.login(loginInput);
     }
     me(authUser) {
         return authUser;
     }
     async userProfile(userProfileInput) {
-        try {
-            const user = await this.userService.findById(userProfileInput.userId);
-            if (!user) {
-                throw Error();
-            }
-            return {
-                ok: true,
-                user,
-            };
-        }
-        catch (error) {
-            return {
-                error: "User can't found",
-                ok: false,
-            };
-        }
+        return this.userService.findById(userProfileInput.userId);
     }
     async editProfile(authUser, editProfileInput) {
-        try {
-            await this.userService.editProfile(authUser.id, editProfileInput);
-            return { ok: true };
-        }
-        catch (error) {
-            return { ok: false, error };
-        }
+        return this.userService.editProfile(authUser.id, editProfileInput);
+    }
+    async verifyEmail(verifyEmailInput) {
+        return this.userService.verfiyEmail(verifyEmailInput.code);
     }
 };
 __decorate([
@@ -122,6 +87,13 @@ __decorate([
         edit_profile_dto_1.EditProfileInput]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "editProfile", null);
+__decorate([
+    (0, graphql_1.Mutation)((returns) => verify_email_dto_1.VerifyEmailOutput),
+    __param(0, (0, graphql_1.Args)('input')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [verify_email_dto_1.VerifyEmailInput]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "verifyEmail", null);
 UserResolver = __decorate([
     (0, graphql_1.Resolver)((type) => user_entity_1.User),
     __metadata("design:paramtypes", [user_service_1.UserService])

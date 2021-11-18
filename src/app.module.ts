@@ -13,6 +13,7 @@ import { UsersModule } from './users/users.module';
 import { User } from './users/entities/user.entity';
 import { JwtModule } from './jwt/jwt.module';
 import { JwtMiddleware } from './jwt/jwt.middleware';
+import { Verification } from './users/entities/verification.entity';
 
 @Module({
   imports: [
@@ -33,7 +34,7 @@ import { JwtMiddleware } from './jwt/jwt.middleware';
       username: 'root',
       password: process.env.PASSWORD,
       database: 'uber-clone',
-      entities: [User],
+      entities: [User, Verification],
       //배포시 false로 설정할 것
       synchronize: true,
     }),
