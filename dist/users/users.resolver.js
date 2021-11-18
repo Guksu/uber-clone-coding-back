@@ -29,7 +29,7 @@ let UserResolver = class UserResolver {
         this.userService = userService;
     }
     async createAccount(createAccountInput) {
-        return this.createAccount(createAccountInput);
+        return this.userService.createAccount(createAccountInput);
     }
     async login(loginInput) {
         return this.userService.login(loginInput);

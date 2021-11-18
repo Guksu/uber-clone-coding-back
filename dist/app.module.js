@@ -17,6 +17,7 @@ const user_entity_1 = require("./users/entities/user.entity");
 const jwt_module_1 = require("./jwt/jwt.module");
 const jwt_middleware_1 = require("./jwt/jwt.middleware");
 const verification_entity_1 = require("./users/entities/verification.entity");
+const mail_module_1 = require("./mail/mail.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(jwt_middleware_1.JwtMiddleware).forRoutes({
@@ -36,6 +37,9 @@ AppModule = __decorate([
                     NODE_ENV: Joi.string().valid('dev', 'prod'),
                     PASSWORD: Joi.string().required(),
                     TOKEN_SECRET: Joi.string().required(),
+                    MAILGUN_API_KEY: Joi.string().required(),
+                    MAILGUN_DOMAIN_NAME: Joi.string().required(),
+                    MAILGIN_FROM_EMAIL: Joi.string().required(),
                 }),
             }),
             typeorm_1.TypeOrmModule.forRoot({
@@ -53,6 +57,11 @@ AppModule = __decorate([
                 context: ({ req }) => ({ user: req['user'] }),
             }),
             jwt_module_1.JwtModule.forRoot({ token_secret: process.env.TOKEN_SECRET }),
+            mail_module_1.MailModule.forRoot({
+                apikey: process.env.MAILGUN_API_KEY,
+                domain: process.env.MAILGUN_DOMAIN_NAME,
+                fromEmail: process.env.MAILGIN_FROM_EMAIL,
+            }),
             users_module_1.UsersModule,
         ],
         controllers: [],

@@ -12,25 +12,42 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JwtService = void 0;
+exports.MailService = void 0;
 const common_1 = require("@nestjs/common");
-const jwt = require("jsonwebtoken");
 const common_constants_1 = require("../common/common.constants");
-let JwtService = class JwtService {
+const got_1 = require("got");
+const FormData = require("form-data");
+let MailService = class MailService {
     constructor(options) {
         this.options = options;
     }
-    sign(userid) {
-        return jwt.sign({ id: userid }, this.options.token_secret);
+    async sendEmail(subject, content) {
+        const form = new FormData();
+        form.append('from', `Excited User <mailgun@${this.options.domain}>`);
+        form.append('to', `${this.options.fromEmail}`);
+        form.append('subject', subject);
+        form.append('text', content);
+        try {
+            await (0, got_1.default)(`https://api.mailgun.net/v3/${this.options.domain}/messages`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Basic ${Buffer.from(`api:${this.options.apikey}`).toString('base64')}`,
+                },
+                body: form,
+            });
+        }
+        catch (error) {
+            console.log(error);
+        }
     }
-    verify(token) {
-        return jwt.verify(token, this.options.token_secret);
+    sendVerificationEmail(email, code) {
+        this.sendEmail('Verfy Your Email', ' Verify-email');
     }
 };
-JwtService = __decorate([
+MailService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)(common_constants_1.CONFIG_OPTIONS)),
     __metadata("design:paramtypes", [Object])
-], JwtService);
-exports.JwtService = JwtService;
-//# sourceMappingURL=jwt.service.js.map
+], MailService);
+exports.MailService = MailService;
+//# sourceMappingURL=mail.service.js.map

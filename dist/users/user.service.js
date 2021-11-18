@@ -19,11 +19,13 @@ const typeorm_2 = require("typeorm");
 const user_entity_1 = require("./entities/user.entity");
 const jwt_service_1 = require("../jwt/jwt.service");
 const verification_entity_1 = require("./entities/verification.entity");
+const mail_service_1 = require("../mail/mail.service");
 let UserService = class UserService {
-    constructor(user, verification, jwtService) {
+    constructor(user, verification, jwtService, mailService) {
         this.user = user;
         this.verification = verification;
         this.jwtService = jwtService;
+        this.mailService = mailService;
     }
     async createAccount({ email, password, role, }) {
         try {
@@ -32,9 +34,10 @@ let UserService = class UserService {
                 return { ok: false, error: 'Email is alreadt exists' };
             }
             const user = await this.user.save(this.user.create({ email, password, role }));
-            await this.verification.save(this.verification.create({
+            const verification = await this.verification.save(this.verification.create({
                 user,
             }));
+            this.mailService.sendVerificationEmail(user.email, verification.code);
             return { ok: true };
         }
         catch (error) {
@@ -81,7 +84,8 @@ let UserService = class UserService {
             if (email) {
                 user.email = email;
                 user.verified = false;
-                await this.verification.save(this.verification.create({ user }));
+                const verification = await this.verification.save(this.verification.create({ user }));
+                this.mailService.sendVerificationEmail(user.email, verification.code);
             }
             if (password) {
                 user.password = password;
@@ -92,6 +96,7 @@ let UserService = class UserService {
             };
         }
         catch (error) {
+            console.log(error);
             return { ok: false, error: "Can't Update profile" };
         }
     }
@@ -100,7 +105,8 @@ let UserService = class UserService {
             const verification = await this.verification.findOne({ code }, { relations: ['user'] });
             if (verification) {
                 verification.user.verified = true;
-                this.user.save(verification.user);
+                await this.user.save(verification.user);
+                await this.verification.delete(verification.id);
                 return { ok: true };
             }
             return { ok: false, error: 'Verification not found' };
@@ -119,7 +125,8 @@ UserService = __decorate([
     __param(1, (0, typeorm_1.InjectRepository)(verification_entity_1.Verification)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
-        jwt_service_1.JwtService])
+        jwt_service_1.JwtService,
+        mail_service_1.MailService])
 ], UserService);
 exports.UserService = UserService;
 //# sourceMappingURL=user.service.js.map

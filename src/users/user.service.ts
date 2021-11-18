@@ -12,6 +12,7 @@ import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { Verification } from './entities/verification.entity';
 import { UserProfileOutput } from './dtos/user-profile.dto';
 import { VerifyEmailOutput } from './dtos/verify-email-dto';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class UserService {
@@ -20,6 +21,7 @@ export class UserService {
     @InjectRepository(Verification)
     private readonly verification: Repository<Verification>,
     private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {}
 
   //arg으로 createAccountInput 는 {email,password,role}과 같다
@@ -38,11 +40,12 @@ export class UserService {
       const user = await this.user.save(
         this.user.create({ email, password, role }),
       );
-      await this.verification.save(
+      const verification = await this.verification.save(
         this.verification.create({
           user,
         }),
       );
+      this.mailService.sendVerificationEmail(user.email, verification.code);
       return { ok: true };
     } catch (error) {
       return { ok: false, error: "Can't create account" };
@@ -102,7 +105,10 @@ export class UserService {
       if (email) {
         user.email = email;
         user.verified = false;
-        await this.verification.save(this.verification.create({ user }));
+        const verification = await this.verification.save(
+          this.verification.create({ user }),
+        );
+        this.mailService.sendVerificationEmail(user.email, verification.code);
       }
 
       if (password) {
@@ -114,6 +120,7 @@ export class UserService {
         ok: true,
       };
     } catch (error) {
+      console.log(error);
       return { ok: false, error: "Can't Update profile" };
     }
   }
@@ -127,7 +134,8 @@ export class UserService {
 
       if (verification) {
         verification.user.verified = true;
-        this.user.save(verification.user);
+        await this.user.save(verification.user);
+        await this.verification.delete(verification.id);
         return { ok: true };
       }
 
