@@ -13,7 +13,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserResolver = void 0;
+const common_1 = require("@nestjs/common");
 const graphql_1 = require("@nestjs/graphql");
+const auth_user_decorator_1 = require("../auth/auth-user.decorator");
+const auth_guard_1 = require("../auth/auth.guard");
 const create_account_dto_1 = require("./dtos/create-account.dto");
 const login_dto_1 = require("./dtos/login.dto");
 const user_entity_1 = require("./entities/user.entity");
@@ -41,13 +44,8 @@ let UserResolver = class UserResolver {
             return { ok: false, error };
         }
     }
-    me(context) {
-        if (!context.user) {
-            return;
-        }
-        else {
-            return context.user;
-        }
+    me(authUser) {
+        return authUser;
     }
 };
 __decorate([
@@ -66,9 +64,10 @@ __decorate([
 ], UserResolver.prototype, "login", null);
 __decorate([
     (0, graphql_1.Query)((returns) => user_entity_1.User),
-    __param(0, (0, graphql_1.Context)()),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    __param(0, (0, auth_user_decorator_1.AuthUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [user_entity_1.User]),
     __metadata("design:returntype", void 0)
 ], UserResolver.prototype, "me", null);
 UserResolver = __decorate([
