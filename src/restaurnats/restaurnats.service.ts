@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CreateAccountOutput } from 'src/users/dtos/create-account.dto';
+import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
-import { CreateRestaurnatDto } from './dtos/create-restaurnat';
-import { UpdateRestaurnatDto } from './dtos/update-restaurnat.dto';
+import { CreateRestaurnatInput } from './dtos/create-restaurnat';
+import { Category } from './entities/category.entitiy';
 import { Restaurnat } from './entities/restaurnat.entity';
 
 @Injectable()
@@ -10,22 +12,39 @@ export class RestaurnatService {
   constructor(
     @InjectRepository(Restaurnat)
     private readonly restaurants: Repository<Restaurnat>,
+    @InjectRepository(Category)
+    private readonly category: Repository<Category>,
   ) {}
-  getAll(): Promise<Restaurnat[]> {
-    return this.restaurants.find();
-  }
 
-  createRestaurnat(
-    CreateRestaurnatDto: CreateRestaurnatDto,
-  ): Promise<Restaurnat> {
-    const newRestaurnat = this.restaurants.create(CreateRestaurnatDto);
-    return this.restaurants.save(newRestaurnat);
-  }
-
-  updateRestaurant(updateRestaurant: UpdateRestaurnatDto) {
-    return this.restaurants.update(updateRestaurant.id, {
-      ...updateRestaurant.data,
-    });
+  async createRestaurnat(
+    owner: User,
+    createRestaurnatInput: CreateRestaurnatInput,
+  ): Promise<CreateAccountOutput> {
+    try {
+      const newRestaurnat = this.restaurants.create(createRestaurnatInput);
+      newRestaurnat.owner = owner;
+      const categoryName = createRestaurnatInput.categoryName
+        .trim()
+        .toLowerCase();
+      const categorySlug = categoryName.replace(/ /g, '-');
+      let category = await this.category.findOne({ slug: categorySlug });
+      if (!category) {
+        category = await this.category.save(
+          this.category.create({ slug: categorySlug, name: categoryName }),
+        );
+      } else {
+        newRestaurnat.category = category;
+      }
+      await this.restaurants.save(newRestaurnat);
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error: "Can't create restaurnat",
+      };
+    }
   }
 }
 

@@ -24,8 +24,10 @@ let JwtMiddleware = class JwtMiddleware {
             try {
                 const decoded = this.jwtService.verify(token.toString());
                 if (typeof decoded === 'object' && decoded.hasOwnProperty('id')) {
-                    const loginUser = await this.userService.findById(decoded['id']);
-                    req['user'] = loginUser.user;
+                    const { user, ok } = await this.userService.findById(decoded['id']);
+                    if (ok) {
+                        req['user'] = user;
+                    }
                 }
             }
             catch (error) { }

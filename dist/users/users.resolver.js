@@ -13,8 +13,8 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserResolver = void 0;
-const common_1 = require("@nestjs/common");
 const graphql_1 = require("@nestjs/graphql");
+const auth_decorator_1 = require("../auth/auth-decorator");
 const auth_user_decorator_1 = require("../auth/auth-user.decorator");
 const auth_guard_1 = require("../auth/auth.guard");
 const create_account_dto_1 = require("./dtos/create-account.dto");
@@ -44,7 +44,7 @@ let UserResolver = class UserResolver {
         return this.userService.editProfile(authUser.id, editProfileInput);
     }
     async verifyEmail(verifyEmailInput) {
-        return this.userService.verfiyEmail(verifyEmailInput.code);
+        return this.userService.verifiyEmail(verifyEmailInput.code);
     }
 };
 __decorate([
@@ -63,14 +63,14 @@ __decorate([
 ], UserResolver.prototype, "login", null);
 __decorate([
     (0, graphql_1.Query)((returns) => user_entity_1.User),
-    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    (0, auth_decorator_1.Role)(['Any']),
     __param(0, (0, auth_user_decorator_1.AuthUser)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User]),
     __metadata("design:returntype", void 0)
 ], UserResolver.prototype, "me", null);
 __decorate([
-    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    (0, auth_decorator_1.Role)(['Any']),
     (0, graphql_1.Query)((returns) => user_profile_dto_1.UserProfileOutput),
     __param(0, (0, graphql_1.Args)()),
     __metadata("design:type", Function),
@@ -78,7 +78,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "userProfile", null);
 __decorate([
-    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    (0, auth_decorator_1.Role)(['Any']),
     (0, graphql_1.Mutation)((returns) => edit_profile_dto_1.EditProfileOutput),
     __param(0, (0, auth_user_decorator_1.AuthUser)()),
     __param(1, (0, graphql_1.Args)('input')),

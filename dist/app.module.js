@@ -18,6 +18,10 @@ const jwt_module_1 = require("./jwt/jwt.module");
 const jwt_middleware_1 = require("./jwt/jwt.middleware");
 const verification_entity_1 = require("./users/entities/verification.entity");
 const mail_module_1 = require("./mail/mail.module");
+const restaurnat_entity_1 = require("./restaurnats/entities/restaurnat.entity");
+const category_entitiy_1 = require("./restaurnats/entities/category.entitiy");
+const restaurnats_module_1 = require("./restaurnats/restaurnats.module");
+const auth_module_1 = require("./auth/auth.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(jwt_middleware_1.JwtMiddleware).forRoutes({
@@ -49,7 +53,7 @@ AppModule = __decorate([
                 username: 'root',
                 password: process.env.PASSWORD,
                 database: 'uber-clone',
-                entities: [user_entity_1.User, verification_entity_1.Verification],
+                entities: [user_entity_1.User, verification_entity_1.Verification, restaurnat_entity_1.Restaurnat, category_entitiy_1.Category],
                 synchronize: true,
             }),
             graphql_1.GraphQLModule.forRoot({
@@ -62,7 +66,9 @@ AppModule = __decorate([
                 domain: process.env.MAILGUN_DOMAIN_NAME,
                 fromEmail: process.env.MAILGIN_FROM_EMAIL,
             }),
+            auth_module_1.AuthModule,
             users_module_1.UsersModule,
+            restaurnats_module_1.RestaurnatsModule,
         ],
         controllers: [],
         providers: [],

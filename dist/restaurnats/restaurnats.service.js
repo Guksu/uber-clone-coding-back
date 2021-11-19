@@ -15,27 +15,50 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RestaurnatService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
+const create_account_dto_1 = require("../users/dtos/create-account.dto");
+const user_entity_1 = require("../users/entities/user.entity");
 const typeorm_2 = require("typeorm");
+const category_entitiy_1 = require("./entities/category.entitiy");
 const restaurnat_entity_1 = require("./entities/restaurnat.entity");
 let RestaurnatService = class RestaurnatService {
-    constructor(restaurants) {
+    constructor(restaurants, category) {
         this.restaurants = restaurants;
+        this.category = category;
     }
-    getAll() {
-        return this.restaurants.find();
-    }
-    createRestaurnat(CreateRestaurnatDto) {
-        const newRestaurnat = this.restaurants.create(CreateRestaurnatDto);
-        return this.restaurants.save(newRestaurnat);
-    }
-    updateRestaurant(updateRestaurant) {
-        return this.restaurants.update(updateRestaurant.id, Object.assign({}, updateRestaurant.data));
+    async createRestaurnat(owner, createRestaurnatInput) {
+        try {
+            const newRestaurnat = this.restaurants.create(createRestaurnatInput);
+            newRestaurnat.owner = owner;
+            const categoryName = createRestaurnatInput.categoryName
+                .trim()
+                .toLowerCase();
+            const categorySlug = categoryName.replace(/ /g, '-');
+            let category = await this.category.findOne({ slug: categorySlug });
+            if (!category) {
+                category = await this.category.save(this.category.create({ slug: categorySlug, name: categoryName }));
+            }
+            else {
+                newRestaurnat.category = category;
+            }
+            await this.restaurants.save(newRestaurnat);
+            return {
+                ok: true,
+            };
+        }
+        catch (error) {
+            return {
+                ok: false,
+                error: "Can't create restaurnat",
+            };
+        }
     }
 };
 RestaurnatService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(restaurnat_entity_1.Restaurnat)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(category_entitiy_1.Category)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository])
 ], RestaurnatService);
 exports.RestaurnatService = RestaurnatService;
 //# sourceMappingURL=restaurnats.service.js.map

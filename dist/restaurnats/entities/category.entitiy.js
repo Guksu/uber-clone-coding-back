@@ -9,52 +9,42 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Restaurnat = void 0;
+exports.Category = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const class_validator_1 = require("class-validator");
 const core_entity_1 = require("../../common/eentities/core.entity");
-const user_entity_1 = require("../../users/entities/user.entity");
 const typeorm_1 = require("typeorm");
-const category_entitiy_1 = require("./category.entitiy");
-let Restaurnat = class Restaurnat extends core_entity_1.CoreEntity {
+const restaurnat_entity_1 = require("./restaurnat.entity");
+let Category = class Category extends core_entity_1.CoreEntity {
 };
 __decorate([
     (0, graphql_1.Field)((type) => String),
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ unique: true }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(5),
+    __metadata("design:type", String)
+], Category.prototype, "name", void 0);
+__decorate([
+    (0, graphql_1.Field)((type) => String, { nullable: true }),
+    (0, typeorm_1.Column)({ nullable: true }),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], Restaurnat.prototype, "name", void 0);
+], Category.prototype, "coverImg", void 0);
 __decorate([
     (0, graphql_1.Field)((type) => String),
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ unique: true }),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], Restaurnat.prototype, "address", void 0);
+], Category.prototype, "slug", void 0);
 __decorate([
-    (0, graphql_1.Field)((type) => String),
-    (0, typeorm_1.Column)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], Restaurnat.prototype, "coverImg", void 0);
-__decorate([
-    (0, graphql_1.Field)((type) => category_entitiy_1.Category, { nullable: true }),
-    (0, typeorm_1.ManyToOne)((type) => category_entitiy_1.Category, (category) => category.restaurants, {
-        nullable: true,
-        onDelete: 'SET NULL',
-    }),
-    __metadata("design:type", category_entitiy_1.Category)
-], Restaurnat.prototype, "category", void 0);
-__decorate([
-    (0, graphql_1.Field)((type) => user_entity_1.User),
-    (0, typeorm_1.ManyToOne)((type) => user_entity_1.User, (user) => user.restaurants, {
-        onDelete: 'CASCADE',
-    }),
-    __metadata("design:type", user_entity_1.User)
-], Restaurnat.prototype, "owner", void 0);
-Restaurnat = __decorate([
-    (0, graphql_1.InputType)('RestaurnatInputType', { isAbstract: true }),
+    (0, graphql_1.Field)((type) => [restaurnat_entity_1.Restaurnat]),
+    (0, typeorm_1.OneToMany)((type) => restaurnat_entity_1.Restaurnat, (restaurant) => restaurant.category),
+    __metadata("design:type", Array)
+], Category.prototype, "restaurants", void 0);
+Category = __decorate([
+    (0, graphql_1.InputType)('CategryInputType', { isAbstract: true }),
     (0, graphql_1.ObjectType)(),
     (0, typeorm_1.Entity)()
-], Restaurnat);
-exports.Restaurnat = Restaurnat;
-//# sourceMappingURL=restaurnat.entity.js.map
+], Category);
+exports.Category = Category;
+//# sourceMappingURL=category.entitiy.js.map

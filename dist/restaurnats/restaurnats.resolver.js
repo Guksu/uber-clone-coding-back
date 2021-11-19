@@ -14,58 +14,31 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RestaurnatResolver = void 0;
 const graphql_1 = require("@nestjs/graphql");
+const auth_decorator_1 = require("../auth/auth-decorator");
+const auth_user_decorator_1 = require("../auth/auth-user.decorator");
+const create_account_dto_1 = require("../users/dtos/create-account.dto");
+const user_entity_1 = require("../users/entities/user.entity");
 const create_restaurnat_1 = require("./dtos/create-restaurnat");
-const update_restaurnat_dto_1 = require("./dtos/update-restaurnat.dto");
 const restaurnat_entity_1 = require("./entities/restaurnat.entity");
 const restaurnats_service_1 = require("./restaurnats.service");
 let RestaurnatResolver = class RestaurnatResolver {
     constructor(restaurnatService) {
         this.restaurnatService = restaurnatService;
     }
-    restaurnat() {
-        return this.restaurnatService.getAll();
-    }
-    async createRestaurnat(CreateRestaurnatDto) {
-        try {
-            await this.restaurnatService.createRestaurnat(CreateRestaurnatDto);
-            return true;
-        }
-        catch (error) {
-            console.log(error);
-            return false;
-        }
-    }
-    async updateRestaurnat(updateRestaurantDto) {
-        try {
-            await this.restaurnatService.updateRestaurant(updateRestaurantDto);
-            return true;
-        }
-        catch (error) {
-            console.log(error);
-            return false;
-        }
+    async createRestaurnat(authUser, createRestaurnatInput) {
+        return await this.restaurnatService.createRestaurnat(authUser, createRestaurnatInput);
     }
 };
 __decorate([
-    (0, graphql_1.Query)((returns) => [restaurnat_entity_1.Restaurnat]),
+    (0, graphql_1.Mutation)((returns) => create_account_dto_1.CreateAccountOutput),
+    (0, auth_decorator_1.Role)(['Owner']),
+    __param(0, (0, auth_user_decorator_1.AuthUser)()),
+    __param(1, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], RestaurnatResolver.prototype, "restaurnat", null);
-__decorate([
-    (0, graphql_1.Mutation)((returns) => Boolean),
-    __param(0, (0, graphql_1.Args)('input')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_restaurnat_1.CreateRestaurnatDto]),
+    __metadata("design:paramtypes", [user_entity_1.User,
+        create_restaurnat_1.CreateRestaurnatInput]),
     __metadata("design:returntype", Promise)
 ], RestaurnatResolver.prototype, "createRestaurnat", null);
-__decorate([
-    (0, graphql_1.Mutation)((retunns) => Boolean),
-    __param(0, (0, graphql_1.Args)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [update_restaurnat_dto_1.UpdateRestaurnatDto]),
-    __metadata("design:returntype", Promise)
-], RestaurnatResolver.prototype, "updateRestaurnat", null);
 RestaurnatResolver = __decorate([
     (0, graphql_1.Resolver)((type) => restaurnat_entity_1.Restaurnat),
     __metadata("design:paramtypes", [restaurnats_service_1.RestaurnatService])

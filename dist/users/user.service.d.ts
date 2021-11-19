@@ -18,5 +18,5 @@ export declare class UserService {
     login({ email, password }: LoginInput): Promise<LoginOutput>;
     findById(id: number): Promise<UserProfileOutput>;
     editProfile(userId: number, { email, password }: EditProfileInput): Promise<EditProfileOutput>;
-    verfiyEmail(code: string): Promise<VerifyEmailOutput>;
+    verifiyEmail(code: string): Promise<VerifyEmailOutput>;
 }

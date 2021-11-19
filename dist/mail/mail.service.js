@@ -35,9 +35,11 @@ let MailService = class MailService {
                 },
                 body: form,
             });
+            return true;
         }
         catch (error) {
             console.log(error);
+            return false;
         }
     }
     sendVerificationEmail(email, code) {

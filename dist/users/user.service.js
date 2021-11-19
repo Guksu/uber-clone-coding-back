@@ -55,7 +55,7 @@ let UserService = class UserService {
                 return { ok: false, error: 'Password is wrong' };
             }
             const token = this.jwtService.sign(user.id);
-            return { ok: true, token };
+            return { ok: true, token: 'signed-token-baby' };
         }
         catch (error) {
             return {
@@ -66,13 +66,11 @@ let UserService = class UserService {
     }
     async findById(id) {
         try {
-            const user = await this.user.findOne({ id });
-            if (user) {
-                return {
-                    ok: true,
-                    user: user,
-                };
-            }
+            const user = await this.user.findOneOrFail({ id });
+            return {
+                ok: true,
+                user,
+            };
         }
         catch (error) {
             return { ok: false, error: 'User Not Found' };
@@ -84,6 +82,7 @@ let UserService = class UserService {
             if (email) {
                 user.email = email;
                 user.verified = false;
+                await this.verification.delete({ user: { id: user.id } });
                 const verification = await this.verification.save(this.verification.create({ user }));
                 this.mailService.sendVerificationEmail(user.email, verification.code);
             }
@@ -100,7 +99,7 @@ let UserService = class UserService {
             return { ok: false, error: "Can't Update profile" };
         }
     }
-    async verfiyEmail(code) {
+    async verifiyEmail(code) {
         try {
             const verification = await this.verification.findOne({ code }, { relations: ['user'] });
             if (verification) {
@@ -114,7 +113,7 @@ let UserService = class UserService {
         catch (error) {
             return {
                 ok: false,
-                error,
+                error: 'Could not verify email.',
             };
         }
     }

@@ -15,6 +15,10 @@ import { JwtModule } from './jwt/jwt.module';
 import { JwtMiddleware } from './jwt/jwt.middleware';
 import { Verification } from './users/entities/verification.entity';
 import { MailModule } from './mail/mail.module';
+import { Restaurnat } from './restaurnats/entities/restaurnat.entity';
+import { Category } from './restaurnats/entities/category.entitiy';
+import { RestaurnatsModule } from './restaurnats/restaurnats.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -38,7 +42,7 @@ import { MailModule } from './mail/mail.module';
       username: 'root',
       password: process.env.PASSWORD,
       database: 'uber-clone',
-      entities: [User, Verification],
+      entities: [User, Verification, Restaurnat, Category],
       //배포시 false로 설정할 것
       synchronize: true,
     }),
@@ -52,7 +56,9 @@ import { MailModule } from './mail/mail.module';
       domain: process.env.MAILGUN_DOMAIN_NAME,
       fromEmail: process.env.MAILGIN_FROM_EMAIL,
     }),
+    AuthModule,
     UsersModule,
+    RestaurnatsModule,
   ],
   controllers: [],
   providers: [],

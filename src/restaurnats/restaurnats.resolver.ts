@@ -1,6 +1,12 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { CreateRestaurnatDto } from './dtos/create-restaurnat';
-import { UpdateRestaurnatDto } from './dtos/update-restaurnat.dto';
+import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Role } from 'src/auth/auth-decorator';
+import { AuthUser } from 'src/auth/auth-user.decorator';
+import { CreateAccountOutput } from 'src/users/dtos/create-account.dto';
+import { User } from 'src/users/entities/user.entity';
+import {
+  CreateRestaurnatInput,
+  CreateRestaurnatOutput,
+} from './dtos/create-restaurnat';
 import { Restaurnat } from './entities/restaurnat.entity';
 import { RestaurnatService } from './restaurnats.service';
 
@@ -8,40 +14,15 @@ import { RestaurnatService } from './restaurnats.service';
 export class RestaurnatResolver {
   constructor(private readonly restaurnatService: RestaurnatService) {}
 
-  @Query((returns) => [Restaurnat])
-  restaurnat(): Promise<Restaurnat[]> {
-    return this.restaurnatService.getAll();
-  }
-
-  @Mutation((returns) => Boolean)
-  //arg를 입력하는 방법 1
-  // @Args('name') name: string,
-  // @Args('isVegan') isVegan: boolean,
-  // @Args('address') address: string,
-  // @Args('ownerName') ownerName: string,
-  //arg를 입력하는 방법 2
+  @Mutation((returns) => CreateAccountOutput)
+  @Role(['Owner'])
   async createRestaurnat(
-    @Args('input') CreateRestaurnatDto: CreateRestaurnatDto,
-  ): Promise<boolean> {
-    try {
-      await this.restaurnatService.createRestaurnat(CreateRestaurnatDto);
-      return true;
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
-  }
-
-  @Mutation((retunns) => Boolean)
-  async updateRestaurnat(
-    @Args() updateRestaurantDto: UpdateRestaurnatDto,
-  ): Promise<boolean> {
-    try {
-      await this.restaurnatService.updateRestaurant(updateRestaurantDto);
-      return true;
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
+    @AuthUser() authUser: User,
+    @Args('input') createRestaurnatInput: CreateRestaurnatInput,
+  ): Promise<CreateRestaurnatOutput> {
+    return await this.restaurnatService.createRestaurnat(
+      authUser,
+      createRestaurnatInput,
+    );
   }
 }

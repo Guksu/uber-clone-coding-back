@@ -9,19 +9,20 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.User = void 0;
+exports.User = exports.UserRole = void 0;
 const common_1 = require("@nestjs/common");
 const graphql_1 = require("@nestjs/graphql");
 const bcrypt = require("bcrypt");
 const class_validator_1 = require("class-validator");
 const core_entity_1 = require("../../common/eentities/core.entity");
+const restaurnat_entity_1 = require("../../restaurnats/entities/restaurnat.entity");
 const typeorm_1 = require("typeorm");
 var UserRole;
 (function (UserRole) {
-    UserRole[UserRole["Client"] = 0] = "Client";
-    UserRole[UserRole["Owner"] = 1] = "Owner";
-    UserRole[UserRole["Delivery"] = 2] = "Delivery";
-})(UserRole || (UserRole = {}));
+    UserRole["Client"] = "CLIENT";
+    UserRole["Owner"] = "OWNER";
+    UserRole["Delivery"] = "DELIVERY";
+})(UserRole = exports.UserRole || (exports.UserRole = {}));
 (0, graphql_1.registerEnumType)(UserRole, { name: 'UserRole' });
 let User = class User extends core_entity_1.CoreEntity {
     async hashPassword() {
@@ -46,7 +47,7 @@ let User = class User extends core_entity_1.CoreEntity {
     }
 };
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ unique: true }),
     (0, graphql_1.Field)((tyep) => String),
     (0, class_validator_1.IsEmail)(),
     __metadata("design:type", String)
@@ -54,19 +55,28 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ select: false }),
     (0, graphql_1.Field)((tyep) => String),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], User.prototype, "password", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'enum', enum: UserRole }),
     (0, graphql_1.Field)((tyep) => UserRole),
     (0, class_validator_1.IsEnum)(UserRole),
-    __metadata("design:type", Number)
+    __metadata("design:type", String)
 ], User.prototype, "role", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: false }),
     (0, graphql_1.Field)((type) => Boolean),
+    (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)
 ], User.prototype, "verified", void 0);
+__decorate([
+    (0, graphql_1.Field)((type) => [restaurnat_entity_1.Restaurnat]),
+    (0, typeorm_1.OneToMany)((type) => restaurnat_entity_1.Restaurnat, (restaurant) => restaurant.owner, {
+        onDelete: 'CASCADE',
+    }),
+    __metadata("design:type", Array)
+], User.prototype, "restaurants", void 0);
 __decorate([
     (0, typeorm_1.BeforeInsert)(),
     (0, typeorm_1.BeforeUpdate)(),
@@ -75,7 +85,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], User.prototype, "hashPassword", null);
 User = __decorate([
-    (0, graphql_1.InputType)({ isAbstract: true }),
+    (0, graphql_1.InputType)('UserInputType', { isAbstract: true }),
     (0, graphql_1.ObjectType)(),
     (0, typeorm_1.Entity)()
 ], User);
