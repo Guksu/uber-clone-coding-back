@@ -56,6 +56,6 @@ export class UserResolver {
   async verifyEmail(
     @Args('input') verifyEmailInput: VerifyEmailInput,
   ): Promise<VerifyEmailOutput> {
-    return this.userService.verfiyEmail(verifyEmailInput.code);
+    return this.userService.verifiyEmail(verifyEmailInput.code);
   }
 }

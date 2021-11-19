@@ -73,7 +73,7 @@ export class UserService {
       // token은 사용자도 그 내용을 확인할 수 있기 때문에 중요한 정보를 포함하는것은 안 된다.
       // token은 이 앱에서만의 유효한 인증을 할 수 있게 해준다.
       const token = this.jwtService.sign(user.id);
-      return { ok: true, token };
+      return { ok: true, token: 'signed-token-baby' };
     } catch (error) {
       return {
         ok: false,
@@ -84,13 +84,11 @@ export class UserService {
 
   async findById(id: number): Promise<UserProfileOutput> {
     try {
-      const user = await this.user.findOne({ id });
-      if (user) {
-        return {
-          ok: true,
-          user: user,
-        };
-      }
+      const user = await this.user.findOneOrFail({ id });
+      return {
+        ok: true,
+        user,
+      };
     } catch (error) {
       return { ok: false, error: 'User Not Found' };
     }
@@ -125,7 +123,7 @@ export class UserService {
     }
   }
 
-  async verfiyEmail(code: string): Promise<VerifyEmailOutput> {
+  async verifiyEmail(code: string): Promise<VerifyEmailOutput> {
     try {
       const verification = await this.verification.findOne(
         { code },
@@ -143,7 +141,7 @@ export class UserService {
     } catch (error) {
       return {
         ok: false,
-        error,
+        error: 'Could not verify email.',
       };
     }
   }
