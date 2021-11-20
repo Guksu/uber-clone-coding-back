@@ -18,14 +18,14 @@ const typeorm_1 = require("@nestjs/typeorm");
 const create_account_dto_1 = require("../users/dtos/create-account.dto");
 const user_entity_1 = require("../users/entities/user.entity");
 const typeorm_2 = require("typeorm");
-const category_entitiy_1 = require("./entities/category.entitiy");
 const restaurnat_entity_1 = require("./entities/restaurnat.entity");
+const category_repository_1 = require("./repository/category.repository");
 let RestaurnatService = class RestaurnatService {
     constructor(restaurants, category) {
         this.restaurants = restaurants;
         this.category = category;
     }
-    async getOrCreateCategory(name) {
+    async getOrCreate(name) {
         const categoryName = name.trim().toLowerCase();
         const categorySlug = categoryName.replace(/ /g, '-');
         let category = await this.category.findOne({ slug: categorySlug });
@@ -38,7 +38,7 @@ let RestaurnatService = class RestaurnatService {
         try {
             const newRestaurnat = this.restaurants.create(createRestaurnatInput);
             newRestaurnat.owner = owner;
-            const category = await this.getOrCreateCategory(createRestaurnatInput.categoryName);
+            const category = await this.category.getOrCreate(createRestaurnatInput.categoryName);
             newRestaurnat.category = category;
             await this.restaurants.save(newRestaurnat);
             return {
@@ -64,6 +64,13 @@ let RestaurnatService = class RestaurnatService {
                     error: "Can't edit restaurant",
                 };
             }
+            let category = null;
+            if (editRestaurantInput.categoryName) {
+                category = await this.category.getOrCreate(editRestaurantInput.categoryName);
+            }
+            await this.restaurants.save([
+                Object.assign(Object.assign({ id: editRestaurantInput.restaurantId, name: editRestaurantInput.name }, editRestaurantInput), (category && { category })),
+            ]);
             return {
                 ok: true,
             };
@@ -76,9 +83,8 @@ let RestaurnatService = class RestaurnatService {
 RestaurnatService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(restaurnat_entity_1.Restaurnat)),
-    __param(1, (0, typeorm_1.InjectRepository)(category_entitiy_1.Category)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
-        typeorm_2.Repository])
+        category_repository_1.CategoryRepository])
 ], RestaurnatService);
 exports.RestaurnatService = RestaurnatService;
 //# sourceMappingURL=restaurnats.service.js.map

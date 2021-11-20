@@ -7,17 +7,17 @@ import { CreateRestaurnatInput } from './dtos/create-restaurnat';
 import { EditRestaurantInput, EditRestaurantOutput } from './dtos/edit-res.dto';
 import { Category } from './entities/category.entitiy';
 import { Restaurnat } from './entities/restaurnat.entity';
+import { CategoryRepository } from './repository/category.repository';
 
 @Injectable()
 export class RestaurnatService {
   constructor(
     @InjectRepository(Restaurnat)
     private readonly restaurants: Repository<Restaurnat>,
-    @InjectRepository(Category)
-    private readonly category: Repository<Category>,
+    private readonly category: CategoryRepository,
   ) {}
 
-  async getOrCreateCategory(name: string): Promise<Category> {
+  async getOrCreate(name: string): Promise<Category> {
     const categoryName = name.trim().toLowerCase();
     const categorySlug = categoryName.replace(/ /g, '-');
     let category = await this.category.findOne({ slug: categorySlug });
@@ -37,7 +37,7 @@ export class RestaurnatService {
       const newRestaurnat = this.restaurants.create(createRestaurnatInput);
       newRestaurnat.owner = owner;
 
-      const category = await this.getOrCreateCategory(
+      const category = await this.category.getOrCreate(
         createRestaurnatInput.categoryName,
       );
 
@@ -73,6 +73,21 @@ export class RestaurnatService {
           error: "Can't edit restaurant",
         };
       }
+
+      let category: Category = null;
+      if (editRestaurantInput.categoryName) {
+        category = await this.category.getOrCreate(
+          editRestaurantInput.categoryName,
+        );
+      }
+      await this.restaurants.save([
+        {
+          id: editRestaurantInput.restaurantId,
+          name: editRestaurantInput.name,
+          ...editRestaurantInput,
+          ...(category && { category }),
+        },
+      ]);
       return {
         ok: true,
       };

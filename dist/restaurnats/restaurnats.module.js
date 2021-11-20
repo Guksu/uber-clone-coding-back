@@ -9,15 +9,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RestaurnatsModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
-const category_entitiy_1 = require("./entities/category.entitiy");
 const restaurnat_entity_1 = require("./entities/restaurnat.entity");
+const category_repository_1 = require("./repository/category.repository");
 const restaurnats_resolver_1 = require("./restaurnats.resolver");
 const restaurnats_service_1 = require("./restaurnats.service");
 let RestaurnatsModule = class RestaurnatsModule {
 };
 RestaurnatsModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([restaurnat_entity_1.Restaurnat, category_entitiy_1.Category])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([restaurnat_entity_1.Restaurnat, category_repository_1.CategoryRepository])],
         providers: [restaurnats_resolver_1.RestaurnatResolver, restaurnats_service_1.RestaurnatService],
     })
 ], RestaurnatsModule);
