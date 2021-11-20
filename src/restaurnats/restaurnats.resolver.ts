@@ -7,6 +7,7 @@ import {
   CreateRestaurnatInput,
   CreateRestaurnatOutput,
 } from './dtos/create-restaurnat';
+import { EditRestaurantInput, EditRestaurantOutput } from './dtos/edit-res.dto';
 import { Restaurnat } from './entities/restaurnat.entity';
 import { RestaurnatService } from './restaurnats.service';
 
@@ -24,5 +25,14 @@ export class RestaurnatResolver {
       authUser,
       createRestaurnatInput,
     );
+  }
+
+  @Mutation((returns) => EditRestaurantOutput)
+  @Role(['Owner'])
+  editRestaurant(
+    @AuthUser() authUser: User,
+    @Args('input') editRestaurantInput: EditRestaurantInput,
+  ): EditRestaurantOutput {
+    return { ok: true };
   }
 }

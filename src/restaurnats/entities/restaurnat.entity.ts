@@ -2,7 +2,7 @@ import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { IsString } from 'class-validator';
 import { CoreEntity } from 'src/common/eentities/core.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToOne, RelationId } from 'typeorm';
 import { Category } from './category.entitiy';
 //typeorm을 통해 테이블을 코드로 작성 할 수 있다.
 //DTO에서 유효성 검사를 할 수 있지만 entity에서도 유효성 감사를 할 수 있다.
@@ -39,4 +39,7 @@ export class Restaurnat extends CoreEntity {
     onDelete: 'CASCADE',
   })
   owner: User;
+
+  @RelationId((restaurant: Restaurnat) => restaurant.owner)
+  ownerId: number;
 }

@@ -19,6 +19,7 @@ const auth_user_decorator_1 = require("../auth/auth-user.decorator");
 const create_account_dto_1 = require("../users/dtos/create-account.dto");
 const user_entity_1 = require("../users/entities/user.entity");
 const create_restaurnat_1 = require("./dtos/create-restaurnat");
+const edit_res_dto_1 = require("./dtos/edit-res.dto");
 const restaurnat_entity_1 = require("./entities/restaurnat.entity");
 const restaurnats_service_1 = require("./restaurnats.service");
 let RestaurnatResolver = class RestaurnatResolver {
@@ -27,6 +28,9 @@ let RestaurnatResolver = class RestaurnatResolver {
     }
     async createRestaurnat(authUser, createRestaurnatInput) {
         return await this.restaurnatService.createRestaurnat(authUser, createRestaurnatInput);
+    }
+    editRestaurant(authUser, editRestaurantInput) {
+        return { ok: true };
     }
 };
 __decorate([
@@ -39,6 +43,16 @@ __decorate([
         create_restaurnat_1.CreateRestaurnatInput]),
     __metadata("design:returntype", Promise)
 ], RestaurnatResolver.prototype, "createRestaurnat", null);
+__decorate([
+    (0, graphql_1.Mutation)((returns) => edit_res_dto_1.EditRestaurantOutput),
+    (0, auth_decorator_1.Role)(['Owner']),
+    __param(0, (0, auth_user_decorator_1.AuthUser)()),
+    __param(1, (0, graphql_1.Args)('input')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_entity_1.User,
+        edit_res_dto_1.EditRestaurantInput]),
+    __metadata("design:returntype", edit_res_dto_1.EditRestaurantOutput)
+], RestaurnatResolver.prototype, "editRestaurant", null);
 RestaurnatResolver = __decorate([
     (0, graphql_1.Resolver)((type) => restaurnat_entity_1.Restaurnat),
     __metadata("design:paramtypes", [restaurnats_service_1.RestaurnatService])

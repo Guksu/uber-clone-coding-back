@@ -7,4 +7,5 @@ export declare class Restaurnat extends CoreEntity {
     coverImg: string;
     category: Category;
     owner: User;
+    ownerId: number;
 }

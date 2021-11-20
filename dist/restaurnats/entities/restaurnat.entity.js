@@ -51,6 +51,10 @@ __decorate([
     }),
     __metadata("design:type", user_entity_1.User)
 ], Restaurnat.prototype, "owner", void 0);
+__decorate([
+    (0, typeorm_1.RelationId)((restaurant) => restaurant.owner),
+    __metadata("design:type", Number)
+], Restaurnat.prototype, "ownerId", void 0);
 Restaurnat = __decorate([
     (0, graphql_1.InputType)('RestaurnatInputType', { isAbstract: true }),
     (0, graphql_1.ObjectType)(),

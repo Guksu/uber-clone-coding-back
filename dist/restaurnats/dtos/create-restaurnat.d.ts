@@ -1,6 +1,6 @@
 import { CoreOutput } from 'src/common/dto/output.dto';
 import { Restaurnat } from '../entities/restaurnat.entity';
-declare const CreateRestaurnatInput_base: import("@nestjs/common").Type<Pick<Restaurnat, "name" | "coverImg" | "address">>;
+declare const CreateRestaurnatInput_base: import("@nestjs/common").Type<Pick<Restaurnat, "name" | "address" | "coverImg">>;
 export declare class CreateRestaurnatInput extends CreateRestaurnatInput_base {
     categoryName: string;
 }
