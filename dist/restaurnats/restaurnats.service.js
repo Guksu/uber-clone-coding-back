@@ -25,15 +25,6 @@ let RestaurnatService = class RestaurnatService {
         this.restaurants = restaurants;
         this.category = category;
     }
-    async getOrCreate(name) {
-        const categoryName = name.trim().toLowerCase();
-        const categorySlug = categoryName.replace(/ /g, '-');
-        let category = await this.category.findOne({ slug: categorySlug });
-        if (!category) {
-            category = await this.category.save(this.category.create({ slug: categorySlug, name: categoryName }));
-        }
-        return category;
-    }
     async createRestaurnat(owner, createRestaurnatInput) {
         try {
             const newRestaurnat = this.restaurants.create(createRestaurnatInput);
@@ -77,6 +68,33 @@ let RestaurnatService = class RestaurnatService {
         }
         catch (error) {
             return { ok: false, error: "Can't edit restaurant" };
+        }
+    }
+    async deleteRestaurant(owner, { restaurantId }) {
+        try {
+            const restaurant = await this.restaurants.findOne(restaurantId);
+            if (!restaurant) {
+                return {
+                    ok: false,
+                    error: 'Restaurant not found',
+                };
+            }
+            if (owner.id !== restaurant.ownerId) {
+                return {
+                    ok: false,
+                    error: "You can't delete a restaurant that you don't own",
+                };
+            }
+            await this.restaurants.delete(restaurantId);
+            return {
+                ok: true,
+            };
+        }
+        catch (_a) {
+            return {
+                ok: false,
+                error: 'Could not delete restaurant.',
+            };
         }
     }
 };

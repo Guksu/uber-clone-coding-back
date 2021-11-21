@@ -19,6 +19,7 @@ const auth_user_decorator_1 = require("../auth/auth-user.decorator");
 const create_account_dto_1 = require("../users/dtos/create-account.dto");
 const user_entity_1 = require("../users/entities/user.entity");
 const create_restaurnat_1 = require("./dtos/create-restaurnat");
+const delete_res_dto_1 = require("./dtos/delete-res.dto");
 const edit_res_dto_1 = require("./dtos/edit-res.dto");
 const restaurnat_entity_1 = require("./entities/restaurnat.entity");
 const restaurnats_service_1 = require("./restaurnats.service");
@@ -29,8 +30,11 @@ let RestaurnatResolver = class RestaurnatResolver {
     async createRestaurnat(authUser, createRestaurnatInput) {
         return await this.restaurnatService.createRestaurnat(authUser, createRestaurnatInput);
     }
-    editRestaurant(authUser, editRestaurantInput) {
-        return { ok: true };
+    editRestaurant(owner, editRestaurantInput) {
+        return this.restaurnatService.editRestaurant(owner, editRestaurantInput);
+    }
+    deleteRestaurant(owner, deleteRestaurantInput) {
+        return this.restaurnatService.deleteRestaurant(owner, deleteRestaurantInput);
     }
 };
 __decorate([
@@ -51,8 +55,18 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User,
         edit_res_dto_1.EditRestaurantInput]),
-    __metadata("design:returntype", edit_res_dto_1.EditRestaurantOutput)
+    __metadata("design:returntype", Promise)
 ], RestaurnatResolver.prototype, "editRestaurant", null);
+__decorate([
+    (0, graphql_1.Mutation)((returns) => delete_res_dto_1.DeleteRestaurantOutput),
+    (0, auth_decorator_1.Role)(['Owner']),
+    __param(0, (0, auth_user_decorator_1.AuthUser)()),
+    __param(1, (0, graphql_1.Args)('input')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_entity_1.User,
+        delete_res_dto_1.DeleteRestaurantInput]),
+    __metadata("design:returntype", Promise)
+], RestaurnatResolver.prototype, "deleteRestaurant", null);
 RestaurnatResolver = __decorate([
     (0, graphql_1.Resolver)((type) => restaurnat_entity_1.Restaurnat),
     __metadata("design:paramtypes", [restaurnats_service_1.RestaurnatService])
